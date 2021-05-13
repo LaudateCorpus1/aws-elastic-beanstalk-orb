@@ -2,6 +2,10 @@ description: >
   Deploy an update to an existing AWS Elastic Beanstalk environment.
 
 parameters:
+  application-name:
+    description: The name of the application (used during `eb init`).
+    type: string
+    default: ""
   environment-name:
     description: The name of the existing environment (created with `eb create`) to update.
     type: string
@@ -38,5 +42,5 @@ steps:
       name: EB Deploy
       working_directory: <<parameters.app-dir>>
       command: |
-        eb init <<parameters.environment-name>> -r $AWS_DEFAULT_REGION -p <<parameters.platform-version>>
+        eb init <<parameters.application-name>> -r $AWS_DEFAULT_REGION -p <<parameters.platform-version>>
         eb deploy <<parameters.environment-name>> <<#parameters.label>>-l <<parameters.label>><</parameters.label>> <<#parameters.description>>-m <<parameters.description>><</parameters.description>>
