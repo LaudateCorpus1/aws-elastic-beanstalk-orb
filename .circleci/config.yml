@@ -73,21 +73,15 @@ workflows:
       # optional: Run BATS tests against your scripts
       - bats/run:
           path: ./src/tests
-      # If you accept building open source forks, protect your secrects behind a restricted context.
-      # A job containing restricted context (which holds your orb publishing credentials) may only be accessed by a user with proper permissions.
-      # An open source user may begin a pipeline with a PR, and once the pipeline is approved by an authorized user at this point, the pipeline will continue with the proper context permissions.
-      - hold-for-dev-publish:
-          type: approval
+      # Publish development version(s) of the orb.
+      - orb-tools/publish-dev:
+          orb-name: circleci/aws-elastic-beanstalk
+          context: orb-publishing # A restricted context containing your private publishing credentials. Will only execute if approved by an authorized user.
           requires:
             - orb-tools/lint
             - orb-tools/pack
             - bats/run
             - shellcheck/check
-      # Publish development version(s) of the orb.
-      - orb-tools/publish-dev:
-          orb-name: circleci/aws-elastic-beanstalk
-          context: orb-publishing # A restricted context containing your private publishing credentials. Will only execute if approved by an authorized user.
-          requires: [hold-for-dev-publish]
       # Trigger an integration workflow to test the
       # dev:${CIRCLE_SHA1:0:7} version of your orb
       - orb-tools/trigger-integration-tests-workflow:
@@ -105,12 +99,12 @@ workflows:
     jobs:
       # Run any integration tests defined within the `jobs` key.
       - integration-test-1:
-          context: [orb-aws-eb-testing]
+          context: [CPE_ORBS_AWS]
           matrix:
               parameters:
                 compute: [python, base]
       - integreation-test-deploy-setup:
-          context: [orb-aws-eb-testing]
+          context: [CPE_ORBS_AWS]
           requires:
               - integration-test-1
       - aws-elastic-beanstalk/deploy:
@@ -119,8 +113,8 @@ workflows:
                   name: Test deployed app
                   working_directory: ./sample_app
                   command: curl $(eb status | grep CNAME | cut -d ":" -f 2)
-          context: [orb-aws-eb-testing]
-          environment-name: eb-orb-testing-1
+          context: [CPE_ORBS_AWS]
+          environment-name: eb-orb-testing
           label: test-label-<<pipeline.number>>
           app-dir: ./sample_app
           requires:
