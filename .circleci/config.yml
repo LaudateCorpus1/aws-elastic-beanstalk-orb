@@ -57,7 +57,7 @@ jobs:
           name: EB Create
           command: |
             cd sample_app
-            eb init sample_app -r $AWS_DEFAULT_REGION -p Node.js
+            eb init sample_app -r $AWS_DEFAULT_REGION -p node.js
 
 workflows:
   # Prior to producing a development orb (which requires credentials) basic validation, linting, and even unit testing can be performed.
