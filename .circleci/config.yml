@@ -115,6 +115,7 @@ workflows:
                   command: curl $(eb status | grep CNAME | cut -d ":" -f 2)
           context: [CPE_ORBS_AWS]
           environment-name: eb-orb-testing
+          application-name: eb-orb-testing
           label: test-label
           app-dir: ./sample_app
           requires:
